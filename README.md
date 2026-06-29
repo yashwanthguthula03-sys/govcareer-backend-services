@@ -27,26 +27,36 @@ The GovCareer Authentication API is built on a highly secure, zero-trust backend
 
 This service is deployed as an immutable containerized artifact. You do not need to install PostgreSQL or configure local environments manually.
 
-1. **Build the Application JAR:**
+1. **Configure the Environment:**
+   ```bash
+   cp .env.example .env
+   ```
+2. **Build the Application JAR:**
    ```bash
    ./mvnw clean package -DskipTests
    ```
-2. **Spin up the Ecosystem:**
+3. **Spin up the Ecosystem:**
    ```bash
    docker-compose up -d --build
    ```
+
+> [!IMPORTANT]
+> The Docker ecosystem **must be actively running** to access the application endpoints, database, or email server locally.
 
 The application will autonomously boot on `http://localhost:8080`, successfully linking to the orchestrated PostgreSQL database.
 
 ## 📚 API Reference
 
-Comprehensive, interactive API documentation is available at **[`http://localhost:8080/swagger-ui.html`](http://localhost:8080/swagger-ui.html)** once the server is running. You can inject the JWT `Bearer` token directly into the Swagger UI.
+Comprehensive, interactive API documentation is available at **[`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html)** once the server is running. You can inject the JWT `Bearer` token directly into the Swagger UI.
+
+Additionally, a local MailHog instance captures all outgoing emails (e.g., verification, password resets) at **[`http://localhost:8025`](http://localhost:8025)**.
 
 | Endpoint | HTTP Method | Required Role | Description |
 | :--- | :---: | :---: | :--- |
 | `/api/auth/register` | `POST` | **Public** | Register a new user |
 | `/api/auth/login` | `POST` | **Public** | Authenticate & retrieve JWTs |
 | `/api/auth/refresh` | `POST` | **Public** | Exchange a refresh token for a new access token |
+| `/api/auth/resend-verification` | `POST` | **Public** | Resend the email verification link |
 | `/api/user/profile` | `GET` | **User** / **Admin** | Access the secure user profile |
 | `/api/admin/dashboard`| `GET` | **Admin** | Access the secured administrative dashboard |
 
