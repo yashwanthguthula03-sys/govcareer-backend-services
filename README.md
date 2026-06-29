@@ -23,9 +23,9 @@ The GovCareer Authentication API is built on a highly secure, zero-trust backend
 * **Docker & Docker Compose**
 * **Swagger (OpenAPI 3.0)**
 
-## 🚀 Quick Start (Docker)
+## 🚀 Quick Start (Docker - Production Parity)
 
-This service is deployed as an immutable containerized artifact. You do not need to install PostgreSQL or configure local environments manually.
+This is the recommended way to run the service with full infrastructure (PostgreSQL, MailHog).
 
 1. **Configure the Environment:**
    ```bash
@@ -41,15 +41,28 @@ This service is deployed as an immutable containerized artifact. You do not need
    ```
 
 > [!IMPORTANT]
-> The Docker ecosystem **must be actively running** to access the application endpoints, database, or email server locally.
+> The Docker ecosystem **must be actively running** to access the application endpoints, database, or email server locally via this method.
 
 The application will autonomously boot on `http://localhost:8080`, successfully linking to the orchestrated PostgreSQL database.
+
+## 💻 Zero-Dependency Sandbox (Offline Mode)
+
+If you don't have Docker installed, or want to develop offline (e.g., on an airplane), you can run the application entirely in-memory using the `local` profile.
+
+```bash
+SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
+```
+
+> [!NOTE]
+> In Sandbox mode:
+> - **PostgreSQL** is replaced by an embedded **H2 Database** (`http://localhost:8080/h2-console`).
+> - **MailHog** (`localhost:8025`) is **DISABLED**. Emails will not be sent to a UI. Instead, the `MockEmailService` will print verification tokens and reset links directly to your **terminal console**.
 
 ## 📚 API Reference
 
 Comprehensive, interactive API documentation is available at **[`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html)** once the server is running. You can inject the JWT `Bearer` token directly into the Swagger UI.
 
-Additionally, a local MailHog instance captures all outgoing emails (e.g., verification, password resets) at **[`http://localhost:8025`](http://localhost:8025)**.
+Additionally, if you are running via **Docker Compose**, a local MailHog instance captures all outgoing emails (e.g., verification, password resets) at **[`http://localhost:8025`](http://localhost:8025)**. *(Note: This link will not work if you are using the Zero-Dependency Sandbox).*
 
 | Endpoint | HTTP Method | Required Role | Description |
 | :--- | :---: | :---: | :--- |
