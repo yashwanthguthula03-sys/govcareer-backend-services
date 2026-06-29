@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: auth-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-govcareer_auth}
+      POSTGRES_USER: ${DB_USER:-govcareer_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password_123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: auth-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-govcareer_auth}
+      DB_USER: ${DB_USER:-govcareer_admin}
+      DB_PASSWORD: ${DB_PASSWORD:-secure_password_123}
+      JWT_SECRET: ${JWT_SECRET:-NDEyM0FBNUJCMkM0RkU1RDY4Nzc5QTIzNEI5QzZFMzVBRjk4QzE2MjkzRTU2RDI0NTVCNzA5RDRC}
+      MAIL_HOST: ${MAIL_HOST:-mailhog}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: auth-mail
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  postgres_data:
